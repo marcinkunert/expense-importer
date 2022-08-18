@@ -26,7 +26,7 @@ public class Parser {
         Elements boldElements = body.getElementsByTag("b");
         String priceText = boldElements.get(2).text();
         String date = boldElements.get(4).text();
-        String title = boldElements.get(3).text().trim();
+        String title = boldElements.get(3).text().trim().replace("Zakup ", "");
 
         priceText = priceText.replaceAll("-", "").replaceAll(" PLN", "");
 

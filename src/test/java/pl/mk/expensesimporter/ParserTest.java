@@ -620,6 +620,6 @@ class ParserTest {
         assertThat(expenseData.shop()).isEqualTo("?");
         assertThat(expenseData.date()).isEqualTo("18-08-2022");
         assertThat(expenseData.amount()).isEqualTo("3,79");
-        assertThat(expenseData.title()).isEqualTo("Zakup BLIK SHOPEE TOWAROWA 28 ref:68246094100");
+        assertThat(expenseData.title()).isEqualTo("BLIK SHOPEE TOWAROWA 28 ref:68246094100");
     }
 }
