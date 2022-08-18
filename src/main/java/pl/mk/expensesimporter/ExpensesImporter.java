@@ -28,6 +28,7 @@ import java.util.List;
 
 public class ExpensesImporter {
 
+    private static final String SPREADSHEET_ID = "1tCmk4VmwLkBwybx4i4yiPjAdu49UHXrtZJp8L8cOaWs";
     private static final String APPLICATION_NAME = "Expenses Importer";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -76,7 +77,7 @@ public class ExpensesImporter {
 
     private void handleMessage(Thread thread, boolean cardPayment) throws IOException {
         System.out.println(thread);
-        Thread threadWithMessages = gmailService.users().threads().get("me", thread.getId()).execute();
+        Thread threadWithMessages = gmailService.users().threads().get(USER_ID, thread.getId()).execute();
         for (Message message : threadWithMessages.getMessages()) {
             String emailBody = new String(BaseEncoding.base64Url().decode(message.getPayload().getBody().getData()));
             ExpenseData expenseData;
@@ -100,7 +101,6 @@ public class ExpensesImporter {
     }
 
     private void insertIntoSpreadsheet(ExpenseData expenseData) throws IOException {
-        String spreadsheetId = "1tCmk4VmwLkBwybx4i4yiPjAdu49UHXrtZJp8L8cOaWs";
         ValueRange valueRange = new ValueRange();
 
         List<List<Object>> rows = List.of(
@@ -108,7 +108,7 @@ public class ExpensesImporter {
         );
 
         valueRange.setValues(rows);
-        sheetsService.spreadsheets().values().append(spreadsheetId, "2022-08!A2:F9999", valueRange)
+        sheetsService.spreadsheets().values().append(SPREADSHEET_ID, "2022-08!A2:F9999", valueRange)
                 .setValueInputOption("USER_ENTERED")
                 .execute();
     }
@@ -117,7 +117,7 @@ public class ExpensesImporter {
         // Load client secrets.
         InputStream in = ExpensesImporter.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
-            throw new FileNotFoundException("Brak pliku: " + CREDENTIALS_FILE_PATH + " Umieść go w src/main/resources" + REQUIRED_AUTH_SCOPES);
+            throw new FileNotFoundException("Brak pliku: " + CREDENTIALS_FILE_PATH + " Umieść go w src/main/resources" + CREDENTIALS_FILE_PATH);
         }
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
