@@ -108,7 +108,7 @@ public class ExpensesImporter {
         );
 
         valueRange.setValues(rows);
-        sheetsService.spreadsheets().values().append(SPREADSHEET_ID, "2022-08!A2:F9999", valueRange)
+        sheetsService.spreadsheets().values().append(SPREADSHEET_ID, "2022-09!A2:F9999", valueRange)
                 .setValueInputOption("USER_ENTERED")
                 .execute();
     }
