@@ -24,13 +24,27 @@ public class Parser {
         Document parse = Jsoup.parse(emailBody);
         Element body = parse.body();
         Elements boldElements = body.getElementsByTag("b");
-        String priceText = boldElements.get(2).text();
-        String date = boldElements.get(4).text();
-        String title = boldElements.get(3).text().trim().replace("Zakup ", "");
 
-        priceText = priceText.replaceAll("-", "").replaceAll(" PLN", "");
+        if (boldElements.size() == 10) {
+            // probably transfer
+            String priceText = boldElements.get(4).text();
+            String date = boldElements.get(6).text();
+            String shop = boldElements.get(3).text().trim();
+            String title = boldElements.get(5).text().trim();
 
-        return new ExpenseData("?", priceText, date, title);
+            priceText = priceText.replaceAll("-", "").replaceAll(" PLN", "");
+
+            return new ExpenseData(shop, priceText, date, title);
+        } else {
+            // probably BLIK
+            String priceText = boldElements.get(2).text();
+            String date = boldElements.get(4).text();
+            String title = boldElements.get(3).text().trim().replace("Zakup ", "");
+
+            priceText = priceText.replaceAll("-", "").replaceAll(" PLN", "");
+
+            return new ExpenseData("?", priceText, date, title);
+        }
     }
 
     private String fixShopName(String originalName) {
