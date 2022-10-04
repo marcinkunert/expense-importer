@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 
 public class ExpensesImporter {
@@ -65,6 +66,7 @@ public class ExpensesImporter {
             System.out.println("No mails to process");
             return;
         }
+        Collections.reverse(threads);
         for (Thread thread : threads) {
             String snippet = thread.getSnippet();
             if (snippet.contains("W związku z transakcją ZAKUPY na Twojej karcie debetowej zostało zablokowane")) {
