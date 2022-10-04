@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.time.YearMonth;
 import java.util.Collections;
 import java.util.List;
 
@@ -110,7 +111,10 @@ public class ExpensesImporter {
         );
 
         valueRange.setValues(rows);
-        sheetsService.spreadsheets().values().append(SPREADSHEET_ID, "2022-09!A2:F9999", valueRange)
+
+        String yearMonth = YearMonth.now().toString();
+
+        sheetsService.spreadsheets().values().append(SPREADSHEET_ID, yearMonth + "!A2:F9999", valueRange)
                 .setValueInputOption("USER_ENTERED")
                 .execute();
     }
