@@ -63,7 +63,7 @@ public class ExpensesImporter {
                 .execute();
 
         List<Thread> threads = allInboxThreads.getThreads();
-        if (threads == null) {
+        if (threads == null || threads.isEmpty()) {
             System.out.println("No mails to process");
             return;
         }
