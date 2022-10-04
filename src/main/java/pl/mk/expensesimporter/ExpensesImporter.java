@@ -76,6 +76,7 @@ public class ExpensesImporter {
                 handleMessage(thread, false);
             }
         }
+        System.out.println("All done!");
     }
 
     private void handleMessage(Thread thread, boolean cardPayment) throws IOException {
