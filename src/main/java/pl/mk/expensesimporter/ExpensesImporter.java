@@ -19,14 +19,15 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.common.io.BaseEncoding;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.time.YearMonth;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ExpensesImporter {
 
@@ -37,12 +38,14 @@ public class ExpensesImporter {
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
     private static final String USER_ID = "me";
     private static final String LABEL_ID_WYDATEK = "Label_1245183208216039034";
-    public static final List<String> REQUIRED_AUTH_SCOPES = List.of(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_MODIFY, SheetsScopes.SPREADSHEETS);
-
+    private static final List<String> REQUIRED_AUTH_SCOPES = List.of(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_MODIFY, SheetsScopes.SPREADSHEETS);
+    private static final String ALREADY_IMPORTED_FILENAME = "imported.txt";
+    
     private final NetHttpTransport httpTransport;
     private final Gmail gmailService;
     private final Sheets sheetsService;
     private final Parser parser;
+    private final Set<String> alreadyImported;
 
     public ExpensesImporter() throws IOException, GeneralSecurityException {
         httpTransport = GoogleNetHttpTransport.newTrustedTransport();
@@ -53,6 +56,16 @@ public class ExpensesImporter {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
         parser = new Parser();
+
+        File file = new File(ALREADY_IMPORTED_FILENAME);
+        if (!file.exists()) {
+            boolean newFile = file.createNewFile();
+            if (!newFile) {
+                System.out.println("Could not create " + ALREADY_IMPORTED_FILENAME);
+            }
+        }
+        
+        alreadyImported = new HashSet<>(Files.readAllLines(Path.of(ALREADY_IMPORTED_FILENAME)));
     }
 
     public void run() throws IOException {
@@ -83,6 +96,11 @@ public class ExpensesImporter {
         System.out.println(thread);
         Thread threadWithMessages = gmailService.users().threads().get(USER_ID, thread.getId()).execute();
         for (Message message : threadWithMessages.getMessages()) {
+            if (alreadyImported.contains(message.getId())) {
+                System.out.println("Skipping duplicate message: " + message);
+                continue;
+            }
+            
             String emailBody = new String(BaseEncoding.base64Url().decode(message.getPayload().getBody().getData()));
             ExpenseData expenseData;
             if (cardPayment) {
@@ -93,8 +111,18 @@ public class ExpensesImporter {
             insertIntoSpreadsheet(expenseData);
             System.out.println(expenseData);
             moveThreadToHandledDirectory(message);
+            saveHandledMessageToFile(message);
         }
         System.out.println(threadWithMessages);
+    }
+
+    private void saveHandledMessageToFile(Message message) {
+        try (FileWriter writer = new FileWriter(ALREADY_IMPORTED_FILENAME, true)) {
+            writer.append(message.getId()).append("\n");
+        } catch (IOException e) {
+            System.out.println("Error while saving message as already imported!");
+            e.printStackTrace();
+        }
     }
 
     private void moveThreadToHandledDirectory(Message message) throws IOException {
