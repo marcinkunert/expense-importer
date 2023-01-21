@@ -97,7 +97,7 @@ public class ExpensesImporter {
         Thread threadWithMessages = gmailService.users().threads().get(USER_ID, thread.getId()).execute();
         for (Message message : threadWithMessages.getMessages()) {
             if (alreadyImported.contains(message.getId())) {
-                System.out.println("Skipping duplicate message: " + message);
+                System.out.println("Skipping duplicate message: " + message.getId() + " " + message.getSnippet());
                 continue;
             }
             
@@ -113,7 +113,7 @@ public class ExpensesImporter {
             moveThreadToHandledDirectory(message);
             saveHandledMessageToFile(message);
         }
-        System.out.println(threadWithMessages);
+//        System.out.println(threadWithMessages);
     }
 
     private void saveHandledMessageToFile(Message message) {
