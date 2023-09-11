@@ -50,11 +50,13 @@ public class Parser {
     private String fixShopName(String originalName) {
         return switch (originalName) {
             case "KAUFLAND WROCLAW" -> "Kaufland Legnicka";
+            case "JMP S.A. BIEDRONKA 410 WROCLAW" -> "Biedronka Na Ostatnim Groszu";
             case "JMP S.A. BIEDRONKA 446 WROCLAW" -> "Biedronka Bystrzycka";
             case "JMP S.A. BIEDRONKA 580 WROCLAW" -> "Biedronka Legnicka";
             case "JMP S.A. BIEDRONKA 1112 WROCLAW" -> "Biedronka Popowicka";
             case "JMP S.A. BIEDRONKA 3384 WROCLAW" -> "Biedronka Kozanowska";
             case "JMP S.A. BIEDRONKA 4106 GLOGOWEK" -> "Biedronka Głogówek";
+            case "JMP S.A. BIEDRONKA 4460 WROCLAW" -> "Biedronka Bystrzycka Rondo";
             case "JMP S.A. BIEDRONKA 5807 WROCLAW" -> "Biedronka Legnicka";
             case "SKLEP LIDL 1941 WROCLAW" -> "LIDL Braniborska";
             case "ZYGULA WROCLAW 12 WROCLAW" -> "Zyguła";
